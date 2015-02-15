@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -63,11 +64,12 @@ namespace SQL_Classes
             dT = null;
 }
 
-        public void insertQuery(string tableName,Dictionary<string,object> insertDic)
+        public long insertQuery(string tableName,Dictionary<string,object> insertDic)
         {
             long lastInsertId;
             string insert="INSERT INTO `"+tableName+"` ";
-           
+            string ID = "SELECT LAST_INSERT_ID();";
+
             int count = insertDic.Count;
             string firstPart="(";
             string lastPart=" VALUES (";
@@ -98,7 +100,10 @@ namespace SQL_Classes
                 insert = "";
                 firstPart = "";
                 lastPart = "";
-               
+                MySqlCommand command=new MySqlCommand(ID,mConnect);
+                lastInsertId = long.Parse(command.ExecuteScalar().ToString());
+                
+
             }
               catch (Exception ex)
             {
@@ -107,6 +112,7 @@ namespace SQL_Classes
             }
             insertDic.Clear();
             insertDic = null;
+            return lastInsertId;
 
 
 
@@ -130,8 +136,55 @@ namespace SQL_Classes
             {
                 throw ex;
             }
-           
+           reader.Close();
             return myObj;
+
+        }
+
+        public void updateQuery(string tableName,Dictionary<string,object> dicUpdate,Dictionary<string,object> terms  )
+        {
+            string update = "UPDATE `" + tableName + "` SET ";
+            string termsQuery=" WHERE ";
+
+          
+            
+            long id = 0;
+            int count = dicUpdate.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (i != count - 1)
+                {
+                    update += "`" + dicUpdate.ElementAt(i).Key.ToString() + "`='" +
+                              dicUpdate.ElementAt(i).Value.ToString() + "',";
+                }
+                else
+                {
+                  update+=  "`" + dicUpdate.ElementAt(i).Key.ToString() + "`='" +
+                              dicUpdate.ElementAt(i).Value.ToString() + "'";
+                }
+
+            }
+            int counts = terms.Count;
+            for (int i = 0; i <counts ; i++)
+            {
+                if (i != count - 1)
+                {
+                    termsQuery += "`" + terms.ElementAt(i).Key.ToString() + "`='" + terms.ElementAt(i).Value.ToString() +
+                                  "' AND ";
+                }
+                else
+                {
+                    termsQuery += "`" + terms.ElementAt(i).Key.ToString() + "`='" + terms.ElementAt(i).Value.ToString() +
+                                "' ; ";
+                }
+            }
+            update += termsQuery;
+       
+            mCommand=new MySqlCommand(update,mConnect);
+            mCommand.ExecuteNonQuery();  
+          
+          
+      
 
         }
 
