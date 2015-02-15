@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.Windows.Forms;
 
 namespace SQL_Classes
 {
@@ -20,20 +21,38 @@ namespace SQL_Classes
         private MySqlCommand mCommand;
 
       
-        public MySQL(string servername,string DBName,string UserID,string Pass)
+        public  MySQL(string servername,string DBName,string UserID,string Pass)
         {
+            MySqlConnectionStringBuilder builder=new MySqlConnectionStringBuilder();
             mServerName = servername;
             mDBName = DBName;
             mUserID = UserID;
             mPassword = Pass;
-            mConString = "SERVER=" + mServerName + ";" + "DATABASE=" +
-        mDBName + ";" + "UID=" + mUserID + ";" + "PASSWORD=" + mPassword + ";";
-            mConnect=new MySqlConnection(mConString);
+
+
+            string Constring =  "SERVER=" + mServerName + ";" + "DATABASE=" +
+        mDBName + ";" + "UID=" + mUserID + ";" + "PASSWORD=" + mPassword + ";"; ;
+
+
+
+            MessageBox.Show(Constring);
+            mConnect=new MySqlConnection(Constring);
             mConnect.Open();
             
+           
+
+
 
 
         }
+
+        public MySQL(string Constrng)
+        {
+            mConnect=new MySqlConnection(Constrng);
+            mConnect.Open();
+        }
+
+      
 
         public DataTable selectDataTable(string selectString)
         {
@@ -45,26 +64,26 @@ namespace SQL_Classes
             dT = null;
 }
 
-        public long insertQuery(string tableName,Dictionary<string,object> insertDic)
+        public void insertQuery(string tableName,Dictionary<string,object> insertDic)
         {
             long lastInsertId;
-            string insert="INSERT INTO `"+tableName+"`";
-            string selectLast = "SELECT LAST_INSERT_ID();";
+            string insert="INSERT INTO `"+tableName+"` ";
+           
             int count = insertDic.Count;
             string firstPart="(";
-            string lastPart="(";
+            string lastPart=" VALUES (";
             for (int i = 0; i < count; i++)
             {
                 if (i != count - 1)
                 {
-                    firstPart += insertDic.Keys.ToString();
-                    lastPart += insertDic.Values.ToString();
+                    firstPart += insertDic.ElementAt(i).Key.ToString()+",";
+                    lastPart += "'"+insertDic.ElementAt(i).Value.ToString()+"',";
 
                 }
                 else
                 {
-                    firstPart += insertDic.Keys.ToString() + ")";
-                    lastPart += insertDic.Values.ToString() + ");";
+                    firstPart += insertDic.ElementAt(i).Key.ToString() + ")";
+                    lastPart +="'"+ insertDic.ElementAt(i).Value.ToString() + "');";
                 }
 
             }
@@ -73,22 +92,22 @@ namespace SQL_Classes
             {
 
 
-
-                mCommand = new MySqlCommand();
-                mCommand.CommandText = insert;
+           
+                mCommand = new MySqlCommand(insert,mConnect);
+         
                 mCommand.ExecuteNonQuery();
                 insert = "";
                 firstPart = "";
                 lastPart = "";
-                mCommand.CommandText = selectLast;
-                lastInsertId = (long) mCommand.ExecuteScalar();
-                return lastInsertId;
+               
             }
               catch (Exception ex)
             {
                 
                 throw ex; 
             }
+            insertDic.Clear();
+            insertDic = null;
 
 
 
@@ -96,7 +115,8 @@ namespace SQL_Classes
 
         }
 
-
+       
+        
 
 
 
