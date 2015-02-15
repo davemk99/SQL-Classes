@@ -30,8 +30,7 @@ namespace SQL_Classes
             mPassword = Pass;
 
 
-            string Constring =  "SERVER=" + mServerName + ";" + "DATABASE=" +
-        mDBName + ";" + "UID=" + mUserID + ";" + "PASSWORD=" + mPassword + ";"; ;
+            string Constring = "SERVER="+mServerName+";DATABASE="+mDBName+";Uid="+mUserID+";PASSWORD="+mPassword;
 
 
 
