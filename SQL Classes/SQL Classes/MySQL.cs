@@ -49,7 +49,7 @@ namespace SQL_Classes
         {
             long lastInsertId;
             string insert="INSERT INTO `"+tableName+"`";
-            string selectLast="SELECT LAST_INSERT_ID();"
+            string selectLast = "SELECT LAST_INSERT_ID();";
             int count = insertDic.Count;
             string firstPart="(";
             string lastPart="(";
