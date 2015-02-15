@@ -114,6 +114,27 @@ namespace SQL_Classes
 
         }
 
+        public object selectSingle(string selectString)
+        {
+            MySqlDataReader reader;
+            mCommand=new MySqlCommand(selectString,mConnect);
+            reader=mCommand.ExecuteReader();
+            object myObj;
+            try
+            {
+                reader.Read();
+                myObj = reader.GetValue(0);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+           
+            return myObj;
+
+        }
+
        
         
 
