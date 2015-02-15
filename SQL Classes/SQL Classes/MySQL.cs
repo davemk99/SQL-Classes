@@ -188,6 +188,12 @@ namespace SQL_Classes
 
         }
 
+        public void destroyConnection()
+        {
+            mConnect.Close();
+
+        }
+
        
         
 
